@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cotonou Life</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef4ef;--surf:#fff;--ink:#10261c;--muted:#5b7468;--acc:#008751;--accInk:#fff;--hi:#e0b400;--red:#c9162b;--line:#cfdcd3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d2119;--surf:#15322a;--ink:#eef4ef;--muted:#9bb5a7;--acc:#FCD116;--accInk:#10261c;--hi:#FCD116;--red:#ff6b78;--line:#25483c}}
+:root[data-theme="dark"]{--bg:#0d2119;--surf:#15322a;--ink:#eef4ef;--muted:#9bb5a7;--acc:#FCD116;--accInk:#10261c;--hi:#FCD116;--red:#ff6b78;--line:#25483c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px 32px}
+.flag{height:8px;background:linear-gradient(90deg,#008751 0 33%,#FCD116 33% 66%,#E8112D 66%)}
+h1{font-weight:800;font-size:44px;line-height:.95;letter-spacing:-.03em;margin:20px 0 6px}
+.sub{color:var(--muted);margin:0 0 14px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+input,select{width:100%;font:inherit;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button{font:600 16px "Bricolage Grotesque",system-ui,sans-serif;border:0;border-radius:10px;padding:12px 14px;background:var(--acc);color:var(--accInk);cursor:pointer;width:100%;text-align:left}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.on{background:var(--ink);color:var(--bg)}
+button:disabled{opacity:.4}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.stats b{display:block;font-size:18px;font-weight:800}
+.stats span{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--acc)}
+.rent{color:var(--muted);font-size:14px;margin:8px 0 0}
+.rent.warn{color:var(--red);font-weight:600}
+small.g{display:block;font-weight:400;opacity:.8;font-size:13px}
+#log p{margin:0 0 6px;font-size:15px}
+#log p:first-child{font-weight:600}
+h2{font-size:15px;margin:0 0 10px;font-weight:800}
+.grid{display:grid;gap:8px}
+.hide{display:none}
+.end{text-align:center}
+.end h2{font-size:26px}
+</style>
+</head>
+<body>
+<div class="flag"></div>
+<div class="wrap">
+<h1>Cotonou<br>Life</h1>
+<p class="sub">Vis une vie à Cotonou : travaille, sors, meuble ton logement, investis.</p>
+
+<div id="start">
+<div class="card">
+<label for="nm" class="sub" style="display:block;margin-bottom:6px">Ton prénom</label>
+<input id="nm" maxlength="20" placeholder="Ex : Zoul" autocomplete="off">
+<div style="height:10px"></div>
+<button id="go">Commencer ma vie à Cotonou</button>
+<div style="height:8px"></div>
+<button id="cont" class="alt hide">Continuer ma partie</button>
+</div>
+<div class="card"><p class="sub" style="margin:0">Tu démarres avec 20 000 FCFA à Akpakpa. Objectif : atteindre 1 000 000 FCFA sans manquer un loyer.</p></div>
+</div>
+
+<div id="game" class="hide">
+<div class="card">
+<div class="stats">
+<div><b id="sM"></b><span>FCFA</span></div>
+<div><b id="sE"></b><span>Énergie</span></div>
+<div><b id="sH"></b><span>Humeur</span></div>
+<div><b id="sR"></b><span>Réputation</span></div>
+</div>
+<div class="bar"><i id="pb"></i></div>
+<p class="rent" id="rentTxt"></p>
+</div>
+<div class="card"><h2 id="dayT"></h2><div class="grid" id="map" style="grid-template-columns:1fr 1fr"></div></div>
+<div class="card"><h2 id="locT"></h2><div class="grid" id="acts"></div></div>
+<div class="card"><h2>Dormir</h2><button id="sleep" class="alt">Passer la nuit chez moi<small class="g" id="sleepD"></small></button></div>
+<div class="card" id="shop"></div>
+<div class="card"><h2>Logement</h2><select id="home" aria-label="Logement"></select></div>
+<div class="card"><h2>Classement des joueurs</h2><div class="grid" id="lb"></div></div>
+<div class="card" id="log"></div>
+</div>
+
+<div id="end" class="card end hide">
+<h2 id="endT"></h2>
+<p id="endP" class="sub"></p>
+<button id="share">Copier mon score</button>
+<div style="height:8px"></div>
+<button id="again" class="alt">Rejouer</button>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+var CFG={apiKey:"AIzaSyACuJFSHxkFDtiEeW0IAO6VewKZ98F3xiU",authDomain:"cotonou-life.firebaseapp.com",databaseURL:"https://cotonou-life-default-rtdb.europe-west1.firebasedatabase.app",projectId:"cotonou-life",appId:"1:665571872849:web:985bac23e83180625e2870"};
+var DB=null,UID=null,TM=null,WATCH=0;
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function initOnline(){
+if(CFG.apiKey==="COLLE_ICI"||!window.firebase){$("lb").innerHTML="<p class='sub' style='margin:0'>Mode hors ligne : ajoute ta configuration Firebase pour activer le classement.</p>";return}
+firebase.initializeApp(CFG);DB=firebase.database();
+firebase.auth().signInAnonymously().then(function(c){UID=c.user.uid;if(S)hook()}).catch(function(){$("lb").innerHTML="<p class='sub' style='margin:0'>Connexion impossible.</p>"});
+}
+function sync(){
+if(!DB||!UID||!S)return;clearTimeout(TM);
+TM=setTimeout(function(){DB.ref("players/"+UID).set({name:S.name,money:S.money,day:S.day,rep:S.rep,ts:Date.now()}).catch(function(){})},1500);
+}
+function hook(){
+if(WATCH||!DB||!UID||!S)return;WATCH=1;
+DB.ref("inbox/"+UID).on("child_added",function(s){var v=s.val();s.ref.remove();
+if(v&&v.amt>0&&S){S.money+=v.amt;log("Tu reçois "+f(v.amt)+" FCFA de "+esc(v.from)+".");render()}});
+sync();board();
+}
+function board(){
+if(!DB)return;
+DB.ref("players").orderByChild("money").limitToLast(10).once("value").then(function(s){
+var a=[];s.forEach(function(c){a.unshift({id:c.key,v:c.val()})});
+$("lb").innerHTML=a.map(function(p,i){return '<button class="alt" data-p="'+p.id+'" data-n="'+esc(p.v.name)+'">'+(i+1)+". "+esc(p.v.name)+" · "+f(p.v.money)+" FCFA<small class='g'>Jour "+p.v.day+(p.id===UID?" · toi":" · appuie pour envoyer de l’argent")+"</small></button>"}).join("")+'<button id="rf" class="alt">Actualiser</button>';
+});
+}
+function sendTo(id,n){
+if(id===UID||!S)return;
+var a=parseInt(prompt("Combien de FCFA envoyer à "+n+" ?","1000"),10);
+if(!(a>0)||a>S.money){log("Montant invalide.");render();return}
+S.money-=a;DB.ref("inbox/"+id).push({from:S.name,amt:a});
+log("Tu envoies "+f(a)+" FCFA à "+n+".");render();
+}
+$("lb").onclick=function(e){var b=e.target.closest("button");if(!b)return;if(b.id==="rf")board();else if(b.dataset.p)sendTo(b.dataset.p,b.dataset.n)};
+var D={
+"Akpakpa":[{n:"Zémidjan",t:"w",e:30,a:3000,b:6000,z:1},{n:"Vendre des beignets",t:"w",e:15,a:1200,b:2500},{n:"Maquis du coin",t:"f",c:2500,e:5,m:15,d:"Bière et musique"}],
+"Dantokpa":[{n:"Vendre au marché",t:"w",e:25,a:2500,b:5000,r:1},{n:"Porter des colis",t:"w",e:35,a:4000,b:7000},{n:"Attiéké-poisson",t:"f",c:1500,e:-30,m:3}],
+"Cadjehoun":[{n:"Livraison à moto",t:"w",e:25,a:3000,b:5500},{n:"Mission freelance",t:"w",e:25,a:0,b:9000,r:1}],
+"Fidjrossè":[{n:"Vendre des boissons",t:"w",e:20,a:2000,b:4500},{n:"Journée à la plage",t:"f",c:1000,e:5,m:12},{n:"Soirée entre amis",t:"f",c:5000,e:15,m:25,r:2}],
+"Haie Vive":[{n:"Serveur au restaurant",t:"w",e:25,a:3500,b:6000,r:1},{n:"Dîner au restaurant",t:"f",c:6000,e:-40,m:10}]
+};
+var HOMES={"Akpakpa":15000,"Cadjehoun":30000,"Fidjrossè":45000};
+var SHOP=[
+{id:"fan",n:"Ventilateur",c:12000,d:"+5 humeur par nuit"},
+{id:"tv",n:"Télévision",c:40000,d:"+10 humeur par nuit"},
+{id:"ac",n:"Climatiseur",c:90000,d:"+15 humeur par nuit"},
+{id:"moto",n:"Moto personnelle",c:250000,d:"Trajets gratuits, zémidjan +50 %"},
+{id:"kio",n:"Kiosque à Dantokpa",c:60000,d:"+3 500 FCFA par jour"},
+{id:"web",n:"Boutique en ligne",c:150000,d:"+8 000 FCFA par jour"}
+];
+var NIGHT={fan:5,tv:10,ac:15},PASS={kio:3500,web:8000};
+var EVTS=[
+{t:"Les policiers contrôlent tes papiers : −2 000 FCFA.",m:-2000},
+{t:"Panne de moto : −3 000 FCFA.",m:-3000},
+{t:"Un client te laisse un pourboire : +1 500 FCFA.",m:1500},
+{t:"Grosse pluie, tu perds du temps : −10 énergie.",en:-10},
+{t:"Un ami te félicite pour ton sérieux : +10 humeur.",h:10}
+];
+var GOAL=1000000,KEY="cotonou-life-v2",S=null,L=[];
+function $(i){return document.getElementById(i)}
+function f(n){return Math.round(n).toLocaleString("fr-FR")}
+function rnd(a,b){return Math.round(a+Math.random()*(b-a))}
+function cl(n){return Math.max(0,Math.min(100,n))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({S:S,L:L}))}catch(e){}sync()}
+function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){return null}}
+function log(t){L.unshift(t);L=L.slice(0,6)}
+function nextRent(){return Math.ceil(S.day/7)*7}
+function travel(){return S.items.moto?{c:0,e:0}:{c:500,e:5}}
+function render(){
+$("sM").textContent=f(S.money);$("sE").textContent=S.energy;$("sH").textContent=S.mood;$("sR").textContent=S.rep;
+$("pb").style.width=Math.min(100,S.money/GOAL*100)+"%";
+var d=nextRent()-S.day,rent=HOMES[S.home];
+$("rentTxt").textContent="Objectif "+f(GOAL)+" FCFA. Loyer de "+f(rent)+" FCFA à "+S.home+" dans "+(d===0?"cette nuit":d+" jour"+(d>1?"s":""))+".";
+$("rentTxt").className="rent"+(d<=1&&S.money<rent?" warn":"");
+$("dayT").textContent=S.name+" · Jour "+S.day+" · Aller à";
+var tr=travel(),m="";
+for(var k in D)m+='<button data-l="'+k+'" class="'+(k===S.loc?"on":"alt")+'">'+k+'</button>';
+$("map").innerHTML=m;
+$("locT").textContent="À "+S.loc+(S.loc===S.loc&&!S.items.moto?" · trajet 500 FCFA":"");
+var a="";
+D[S.loc].forEach(function(x,i){
+var ok=(x.e<=0||S.energy>=x.e)&&(!x.c||S.money>=x.c);
+var info=x.t==="w"?(x.a===0?"gain très variable":f(x.a)+" à "+f(x.b)+" FCFA"):("−"+f(x.c)+" FCFA, +"+(x.m||0)+" humeur");
+info+=" · "+(x.e>0?"−"+x.e:"+"+(-x.e))+" énergie";
+a+='<button data-a="'+i+'"'+(ok?"":" disabled")+'>'+x.n+'<small class="g">'+info+'</small></button>'});
+$("acts").innerHTML=a;
+var nb=0;for(var q in NIGHT)if(S.items[q])nb+=NIGHT[q];
+$("sleepD").textContent="Énergie à 100, −1 000 FCFA de dépenses, humeur "+(nb-8>=0?"+":"")+(nb-8)+" par nuit";
+if(S.loc==="Dantokpa"){
+var s="<h2>Boutique de Dantokpa</h2><div class='grid'>";
+SHOP.forEach(function(x){var own=S.items[x.id];
+s+='<button data-s="'+x.id+'" class="alt"'+(own||S.money<x.c?" disabled":"")+'>'+x.n+(own?" · acheté":" · "+f(x.c)+" FCFA")+'<small class="g">'+x.d+'</small></button>'});
+$("shop").innerHTML=s+"</div>";
+}else $("shop").innerHTML="<h2>Boutique</h2><p class='sub' style='margin:0'>Va à Dantokpa pour acheter du matériel et investir.</p>";
+var hs=$("home");
+if(!hs.options.length)for(var h in HOMES){var o=document.createElement("option");o.value=h;o.textContent=h+" · loyer "+f(HOMES[h])+" FCFA";hs.appendChild(o)}
+hs.value=S.home;
+$("log").innerHTML=L.map(function(t){return "<p>"+t+"</p>"}).join("");
+save();
+}
+function finish(win,msg){
+$("game").className="hide";$("end").className="card end";
+$("endT").textContent=win?"Bravo, tu as réussi !":"Fin de partie";
+$("endP").textContent=msg+" Score : "+f(S.money)+" FCFA en "+S.day+" jours.";
+try{localStorage.removeItem(KEY)}catch(e){}
+}
+function act(i){
+var x=D[S.loc][i];
+if(x.e>0&&S.energy<x.e)return;
+if(x.c&&S.money<x.c)return;
+S.energy=cl(S.energy-x.e);
+if(x.t==="w"){
+var g=rnd(x.a,x.b)*(1+Math.min(S.rep,30)/100);
+if(x.z&&S.items.moto)g*=1.5;
+if(S.mood<20){g*=.7;log("Tu es de mauvaise humeur : gains réduits.")}
+g=Math.round(g);S.money+=g;S.rep+=x.r||0;S.mood=cl(S.mood-3);
+log(x.n+" : +"+f(g)+" FCFA.");
+if(Math.random()<.25){var v=EVTS[rnd(0,EVTS.length-1)];
+if(v.m)S.money=Math.max(0,S.money+v.m);if(v.en)S.energy=cl(S.energy+v.en);if(v.h)S.mood=cl(S.mood+v.h);log(v.t)}
+}else{
+S.money-=x.c;S.mood=cl(S.mood+(x.m||0));S.rep+=x.r||0;
+log(x.n+" : −"+f(x.c)+" FCFA, humeur +"+(x.m||0)+".");
+}
+if(S.money>=GOAL){finish(true,"Tu as atteint ton objectif à Cotonou.");return}
+render();
+}
+function go(l){
+if(l===S.loc)return;var t=travel();
+if(S.money<t.c||S.energy<t.e){log("Pas assez d’argent ou d’énergie pour aller à "+l+".");render();return}
+S.money-=t.c;S.energy=cl(S.energy-t.e);S.loc=l;log("Tu arrives à "+l+".");render();
+}
+function buy(id){
+var x=SHOP.filter(function(y){return y.id===id})[0];
+if(!x||S.items[id]||S.money<x.c)return;
+S.money-=x.c;S.items[id]=1;log(x.n+" acheté : −"+f(x.c)+" FCFA.");render();
+}
+function sleep(){
+var nb=0;for(var q in NIGHT)if(S.items[q])nb+=NIGHT[q];
+S.day++;S.energy=100;S.money=Math.max(0,S.money-1000);S.mood=cl(S.mood-8+nb);
+log("Nuit passée. Dépenses du jour : −1 000 FCFA.");
+for(var p in PASS)if(S.items[p]){S.money+=PASS[p];log("Revenu de ton investissement : +"+f(PASS[p])+" FCFA.")}
+if((S.day-1)%7===0){var r=HOMES[S.home];
+if(S.money<r){finish(false,"Tu n’as pas pu payer ton loyer de "+f(r)+" FCFA.");return}
+S.money-=r;log("Loyer payé : −"+f(r)+" FCFA.")}
+if(S.money>=GOAL){finish(true,"Tu as atteint ton objectif à Cotonou.");return}
+render();
+}
+function show(){$("start").className="hide";$("end").className="card end hide";$("game").className="";render();hook()}
+function start(n){S={name:n||"Joueur",day:1,money:20000,energy:100,mood:70,rep:0,loc:"Akpakpa",home:"Akpakpa",items:{}};L=["Bienvenue à Cotonou, "+S.name+". Ta première journée commence."];show()}
+$("go").onclick=function(){start($("nm").value.trim())};
+$("cont").onclick=function(){var d=load();if(d){S=d.S;L=d.L;show()}};
+$("map").onclick=function(e){var b=e.target.closest("button");if(b)go(b.dataset.l)};
+$("acts").onclick=function(e){var b=e.target.closest("button");if(b)act(+b.dataset.a)};
+$("shop").onclick=function(e){var b=e.target.closest("button");if(b)buy(b.dataset.s)};
+$("sleep").onclick=sleep;
+$("home").onchange=function(){
+if(S.money<5000){log("Il te faut 5 000 FCFA pour déménager.");render();return}
+S.money-=5000;S.home=this.value;log("Tu déménages à "+S.home+" : −5 000 FCFA.");render()};
+$("again").onclick=function(){$("end").className="card end hide";$("start").className="";$("game").className="hide"};
+$("share").onclick=function(){
+var t="J’ai fini Cotonou Life avec "+f(S.money)+" FCFA en "+S.day+" jours. Et toi ?";
+try{navigator.clipboard.writeText(t);this.textContent="Score copié"}catch(e){this.textContent=t}
+};
+if(load())$("cont").className="alt";
+initOnline();
+</script>
+</body>
+</html>
